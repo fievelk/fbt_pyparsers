@@ -8,6 +8,8 @@ from __future__ import division
 import argparse
 import json
 import logging
+import signal
+import sys
 
 from post_type_parser import post_type_config
 from parser_client import get_available_snippets_info, get_snippets, commit_result
@@ -50,6 +52,11 @@ def run_parser(parser_config):
 # Entry point: logging etc.
 # ---------------------------------------------------------------------------- #
 
+def _signal_handler(signum, frame):
+    """Handle CTRL-C signal to stop execution."""
+    print('\nExiting!')
+    sys.exit(0)
+
 def _configure_logger(loglevel):
     logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
     logging.basicConfig(level=loglevel)
@@ -72,6 +79,7 @@ def _parse_arguments():
 
 def main():
     """Main function."""
+    signal.signal(signal.SIGINT, _signal_handler)
     run_parser(post_type_config)
 
 if __name__ == '__main__':
