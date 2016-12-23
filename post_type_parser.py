@@ -12,8 +12,8 @@ post_type_config = {
     'requirements': {},
     # 'requirements': { "postType" : "promoted" },
     'implementation': get_post_type,
-    'since': "2016-12-17T20:00:00Z",
-    'until': "2016-12-17T20:10:00Z" # Rendi dinamico (fino a time.now() ISO8601 DateTime)
-    # 'since': "2016-11-13",
-    # 'until': "2016-12-17T20:19:01.345Z" # Rendi dinamico (fino a time.now())
+    'since': "2016-12-21T20:00:00Z",
+    'until': "2016-12-22T20:10:00Z" # Rendi dinamico (fino a time.now() ISO8601 DateTime)
+    # 'since': "2016-12-17T20:00:00Z",
+    # 'until': "2016-12-17T20:10:00Z" # Rendi dinamico (fino a time.now() ISO8601 DateTime)
 }
