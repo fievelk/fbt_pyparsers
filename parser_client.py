@@ -54,7 +54,7 @@ def get_snippets(parser_config):
 
 def commit_result(parser_config, new_meta, snippet):
     """Commit new metadata obtained by executing a parser over the snippet."""
-    logging.debug("Committing new metadata for snippet %s", snippet['id'])
+    # logging.debug("Committing new metadata for snippet %s", snippet['id'])
     url = _compose_url('result')
     payload = {
         'htmlId': snippet['id'],

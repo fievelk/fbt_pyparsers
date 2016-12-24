@@ -23,17 +23,6 @@ def count_slots(snippets_info):
                   snippets_info['available'], snippets_info['limit'], slots)
     return slots
 
-# TODO: Check whether we need this step or we can directly iterate using just one config.
-def iterate_on_slots(parser_config):
-    """Iterate over slots and generate new config objects for parser. Each config
-    contains a different value for the `index` key.
-
-    """
-    for i in range(parser_config['slots']):
-        index = {'index': i}
-        logging.debug(index)
-        yield dict(parser_config, **index)
-
 def extract_metadata(parser_config, snippet):
     """Apply the parser implementation over the snippet and return new metadata."""
     return parser_config['implementation'](snippet['html'])
@@ -63,6 +52,6 @@ def run(parser_config):
     snippets_info = get_snippets_info(parser_config)
     parser_config['slots'] = count_slots(snippets_info)
 
-    # for i in range(parser_config['slots']):
-    for parser_config in iterate_on_slots(parser_config):
+    for i in range(parser_config['slots']):
+        logging.debug("Processing slot #%d", i+1)
         process_html_bulk(parser_config)
