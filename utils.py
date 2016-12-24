@@ -25,7 +25,25 @@ def import_parser_key(parser_config):
         logging.error('Your parser key was not found in parsers-keys.json')
         raise exception
 
+    extended_config = set_requirements(extended_config)
     return extended_config
+
+def set_requirements(parser_config):
+    parser_config = deepcopy(parser_config)
+    if parser_config.get('repeat') in [None, '']:
+        pass
+    elif isinstance(parser_config['repeat'], bool):
+        parser_config['requirements'] = parser_config['name'], parser_config['repeat']
+    else:
+        raise WrongRequirementsException("parser_config['repeat'] should be boolean.")
+    return parser_config
+
+# ---------------------------------------------------------------------------- #
+# Exception handling
+# ---------------------------------------------------------------------------- #
+
+class WrongRequirementsException(TypeError):
+    pass
 
 # ---------------------------------------------------------------------------- #
 # Logging etc.
