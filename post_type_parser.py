@@ -1,19 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-def get_post_type(snippet):
-    result = 'new metadata value'
-    # print({ 'myParserName': result })
-    return { 'myParserName': result }
+from datetime import datetime
+import parser_runner
 
-post_type_config = {
+def get_post_language(snippet):
+    """Note: the `new_meta` keys need to be equal to those declared in
+    `parsers-keys.json`.
+
+    """
+    result = 'new metadata value'
+    # return {'postLanguage': result}
+    return {'postType': result}
+
+POST_LANGUAGE_CONFIG = {
     'name': 'postType',
     'parserName': 'postType',
     'requirements': {},
-    # 'requirements': { "postType" : "promoted" },
-    'implementation': get_post_type,
-    'since': "2016-12-21T20:00:00Z",
-    'until': "2016-12-22T20:10:00Z" # Rendi dinamico (fino a time.now() ISO8601 DateTime)
-    # 'since': "2016-12-17T20:00:00Z",
-    # 'until': "2016-12-17T20:10:00Z" # Rendi dinamico (fino a time.now() ISO8601 DateTime)
+    'implementation': get_post_language,
+    'since': "2016-11-13",
+    'until': datetime.now().isoformat()
 }
+
+if __name__ == '__main__':
+    parser_runner.run(POST_LANGUAGE_CONFIG)

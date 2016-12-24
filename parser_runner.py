@@ -5,74 +5,64 @@
 
 from __future__ import division
 
-import argparse
 import logging
 import signal
-import sys
 
-from post_type_parser import post_type_config
-from parser_client import get_available_snippets_info, get_snippets, commit_result
-from utils import import_parser_key
+from parser_client import get_snippets_info, get_snippets, commit_result
+from utils import import_parser_key, _parse_arguments, _signal_handler
 
-def run_parser(parser_config):
-    """Run parser"""
-    available, limit = get_available_snippets_info(parser_config)
-    logging.info("Available snippets: %s", available)
+def count_slots(snippets_info):
+    """Count slots that have to be used in order to group requests.
+    We allocate at least one slot.
 
-    # Enrich parser configuration with its key. This is used by the server to
-    # check that the parser is authorized.
-    parser_config = import_parser_key(parser_config)
-
-    if available == 0:
-        logging.info("There are no available snippets to be parsed by %s parser.",
-                      parser_config['name'])
-        sys.exit(0)
-
-    slots = 1 if (available // limit == 0) else available // limit # We'll need at least one slot
+    """
+    available = int(snippets_info['available'])
+    limit = int(snippets_info['limit'])
+    slots = 1 if (available // limit == 0) else available // limit
     logging.debug("%d HTMLs, %d per request = %d requests",
-                  available, limit, slots)
-    for i in range(slots):
-        parser_config.update({'index': i})
-        snippets = get_snippets(parser_config) # Max: 300 snippets for each iteration
-        for snippet in snippets:
-            new_meta = parser_config['implementation'](snippet['html'])
-            commit_result(parser_config, new_meta, snippet)
+                  snippets_info['available'], snippets_info['limit'], slots)
+    return slots
 
+# TODO: Check whether we need this step or we can directly iterate using just one config.
+def iterate_on_slots(parser_config):
+    """Iterate over slots and generate new config objects for parser. Each config
+    contains a different value for the `index` key.
 
-# ---------------------------------------------------------------------------- #
-# Entry point: logging etc.
-# ---------------------------------------------------------------------------- #
+    """
+    for i in range(parser_config['slots']):
+        index = {'index': i}
+        logging.debug(index)
+        yield dict(parser_config, **index)
 
-def _signal_handler(signum, frame):
-    """Handle CTRL-C signal to stop execution."""
-    print('\nExiting!')
-    sys.exit(0)
+def extract_metadata(parser_config, snippet):
+    """Apply the parser implementation over the snippet and return new metadata."""
+    return parser_config['implementation'](snippet['html'])
 
-def _configure_logger(loglevel):
-    logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
-    logging.basicConfig(level=loglevel)
+def process_html_bulk(parser_config):
+    """Retrieve and process each snippet, committing resulting metadata. """
+    snippets = get_snippets(parser_config) # Max 300 snippets for each iteration
+    for snippet in snippets:
+        new_metadata = extract_metadata(parser_config, snippet)
+        commit_result(parser_config, new_metadata, snippet)
 
-def _parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-d', '--debug',
-        help="Activates debug mode",
-        action="store_const", dest="loglevel", const=logging.DEBUG,
-        default=logging.WARNING,
-    )
-    parser.add_argument(
-        '-v', '--verbose',
-        help="Activates verbose mode",
-        action="store_const", dest="loglevel", const=logging.INFO,
-    )
-    args = parser.parse_args()
-    _configure_logger(args.loglevel)
+def run(parser_config):
+    """Run parser.
 
-def main():
-    """Main function."""
+    Example for debugging:
+        python my_parser.py -d
+
+    """
+    console_args = _parse_arguments()
     signal.signal(signal.SIGINT, _signal_handler)
-    run_parser(post_type_config)
 
-if __name__ == '__main__':
-    _parse_arguments()
-    main()
+    parser_config['repeat'] = console_args.repeat
+    # parser_config['snippetConcurrency'] = console_args.snippetConcurrency
+    # parser_config['delay'] = console_args.delay
+
+    parser_config = import_parser_key(parser_config)
+    snippets_info = get_snippets_info(parser_config)
+    parser_config['slots'] = count_slots(snippets_info)
+
+    # for i in range(parser_config['slots']):
+    for parser_config in iterate_on_slots(parser_config):
+        process_html_bulk(parser_config)
