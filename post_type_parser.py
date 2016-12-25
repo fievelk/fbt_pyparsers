@@ -37,8 +37,11 @@ POST_LANGUAGE_CONFIG = {
     'until': datetime.now().isoformat()
 }
 
-def start():
-    parser_runner.run(utils.CONSOLE_ARGS, POST_LANGUAGE_CONFIG)
+def start(arguments=None):
+    """Start the parser."""
+    if arguments is None:
+        arguments = utils.CONSOLE_ARGS
+    parser_runner.run(arguments, POST_LANGUAGE_CONFIG)
 
 if __name__ == '__main__':
     start()
