@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """Client functions."""
@@ -6,19 +5,37 @@
 import json
 import logging
 import requests
+from copy import deepcopy
 
-def _compose_url(method):
-    base_url = 'https://facebook.tracking.exposed/api/v1/snippet/'
+import utils
+
+def _generate_config_payload(parser_config):
+    """This method maps the parser configuration structure into a correct payload
+    that has to be send to the server. This is done because of some naming mismatches
+    between parser configuration variables and server payload parameters.
+
+    """
+    payload = deepcopy(parser_config)
+    payload['parserName'] = payload.pop('name')
+    return payload
+
+def _compose_url(method, base_url=None):
+    base_url = utils.CONSOLE_ARGS.get('url', base_url)
+    if base_url is None:
+        base_url = 'https://facebook.tracking.exposed/api/v1/snippet/'
+    if not base_url.endswith('/'):
+        base_url += '/'
     return base_url + str(method)
 
 def get_snippets_info(parser_config):
     """Get information about available snippets."""
-    logging.info("Requesting info about available snippets...")
     url = _compose_url('status')
-    payload = parser_config
+    payload = _generate_config_payload(parser_config)
+    logging.info("Requesting info about available snippets...")
     resp = requests.post(url, data=payload)
+    # Raise an exception if we get a 4XX client error or 5XX server error response
+    resp.raise_for_status()
     logging.debug("Response: %s", resp.content)
-
     return json.loads(resp.text)
 
 def get_snippets(parser_config):
@@ -47,7 +64,7 @@ def get_snippets(parser_config):
     """
     logging.info("Fetching snippets...")
     url = _compose_url('content')
-    payload = parser_config
+    payload = _generate_config_payload(parser_config)
     resp = requests.post(url, data=payload)
 
     return json.loads(resp.text)

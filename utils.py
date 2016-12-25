@@ -6,14 +6,15 @@
 import argparse
 import json
 import logging
+import signal
 import sys
 
 from copy import deepcopy
 
 def import_parser_key(parser_config):
     """
-    Enrich parser configuration with its key. This is used by the server to check
-    that the parser is authorized.
+    Enrich the parser configuration with its key. This is used by the server to
+    check whether the parser can be authorized or not.
 
     """
     extended_config = deepcopy(parser_config)
@@ -29,10 +30,12 @@ def import_parser_key(parser_config):
     return extended_config
 
 def set_requirements(parser_config):
+    """Set `requirements` in parser configuration."""
     parser_config = deepcopy(parser_config)
     if parser_config.get('repeat') in [None, '']:
         pass
     elif isinstance(parser_config['repeat'], bool):
+        # TODO: repeat is probably a string, since it comes from console args. Do not check on bool
         parser_config['requirements'] = parser_config['name'], parser_config['repeat']
     else:
         raise WrongRequirementsException("parser_config['repeat'] should be boolean.")
@@ -43,10 +46,11 @@ def set_requirements(parser_config):
 # ---------------------------------------------------------------------------- #
 
 class WrongRequirementsException(TypeError):
+    """Exception to be used when a wrong `requirements` parameter is provided."""
     pass
 
 # ---------------------------------------------------------------------------- #
-# Logging etc.
+# Logging and command-line arguments.
 # ---------------------------------------------------------------------------- #
 
 def _signal_handler(signum, frame):
@@ -55,10 +59,12 @@ def _signal_handler(signum, frame):
     sys.exit(0)
 
 def _configure_logger(loglevel):
+    """Configure logging levels."""
     logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
     logging.basicConfig(level=loglevel)
 
 def _parse_arguments():
+    """Parse arguments provided from command-line and return them as a dictionary."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-d', '--debug',
@@ -74,7 +80,13 @@ def _parse_arguments():
     parser.add_argument(
         '-r', '--repeat',
         help="Repeat",
-        action="store_const", dest="repeat", const=None,
+        action="store", dest="repeat",
+        default=None
+    )
+    parser.add_argument(
+        '-u', '--url',
+        help="URL",
+        action="store", dest="url",
         default=None
     )
     # parser.add_argument(
@@ -89,6 +101,17 @@ def _parse_arguments():
     #     action="store_const", dest="delay", const=None,
     #     default=200
     # )
-    args = parser.parse_args()
-    _configure_logger(args.loglevel)
-    return args
+    return vars(parser.parse_args())
+
+def _configure_settings():
+    """Configure command-line arguments, logging levels and interruption signal.
+    Return a dictionary of provided command-line arguments.
+
+    """
+    console_args = _parse_arguments()
+    _configure_logger(console_args['loglevel'])
+    signal.signal(signal.SIGINT, _signal_handler)
+    return console_args
+
+# Import console arguments and make them available to other modules
+CONSOLE_ARGS = _configure_settings()

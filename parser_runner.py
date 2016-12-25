@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """Main runner for parsers"""
@@ -6,10 +5,9 @@
 from __future__ import division
 
 import logging
-import signal
 
 from parser_client import get_snippets_info, get_snippets, commit_result
-from utils import import_parser_key, _parse_arguments, _signal_handler
+from utils import import_parser_key
 
 def count_slots(snippets_info):
     """Count slots that have to be used in order to group requests.
@@ -24,30 +22,21 @@ def count_slots(snippets_info):
     return slots
 
 def extract_metadata(parser_config, snippet):
-    """Apply the parser implementation over the snippet and return new metadata."""
+    """Apply the parser over the snippet and return new metadata."""
     return parser_config['implementation'](snippet['html'])
 
 def process_html_bulk(parser_config):
-    """Retrieve and process each snippet, committing resulting metadata. """
+    """Retrieve and process each snippet, committing resulting metadata."""
     snippets = get_snippets(parser_config) # Max 300 snippets for each iteration
     for snippet in snippets:
         new_metadata = extract_metadata(parser_config, snippet)
         commit_result(parser_config, new_metadata, snippet)
 
-def run(parser_config):
-    """Run parser.
-
-    Example for debugging:
-        python my_parser.py -d
-
-    """
-    console_args = _parse_arguments()
-    signal.signal(signal.SIGINT, _signal_handler)
-
-    parser_config['repeat'] = console_args.repeat
-    # parser_config['snippetConcurrency'] = console_args.snippetConcurrency
-    # parser_config['delay'] = console_args.delay
-
+def run(arguments, parser_config):
+    """Run parser."""
+    parser_config['repeat'] = arguments['repeat']
+    # parser_config['snippetConcurrency'] = arguments['snippetConcurrency']
+    # parser_config['delay'] = arguments['delay']
     parser_config = import_parser_key(parser_config)
     snippets_info = get_snippets_info(parser_config)
     parser_config['slots'] = count_slots(snippets_info)
