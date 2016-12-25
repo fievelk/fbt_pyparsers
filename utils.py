@@ -32,13 +32,14 @@ def import_parser_key(parser_config):
 def set_requirements(parser_config):
     """Set `requirements` in parser configuration."""
     parser_config = deepcopy(parser_config)
-    if parser_config.get('repeat') in [None, '']:
+    repeat_flag = parser_config.get('repeat')
+    if repeat_flag in [None, '']:
         pass
-    elif isinstance(parser_config['repeat'], bool):
-        # TODO: repeat is probably a string, since it comes from console args. Do not check on bool
-        parser_config['requirements'] = parser_config['name'], parser_config['repeat']
+    elif isinstance(repeat_flag, str) and repeat_flag.lower() in ['true', 'false']:
+        parser_config['requirements'] = {parser_config['name']: repeat_flag}
     else:
-        raise WrongRequirementsException("parser_config['repeat'] should be boolean.")
+        raise WrongRequirementsException("parser_config['repeat'] should be a \
+              ['true'|'false'] string.")
     return parser_config
 
 # ---------------------------------------------------------------------------- #
