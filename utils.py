@@ -8,7 +8,6 @@ import json
 import logging
 import signal
 import sys
-
 from copy import deepcopy
 
 def import_parser_key(parser_config):

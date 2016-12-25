@@ -4,8 +4,9 @@
 
 import json
 import logging
-import requests
 from copy import deepcopy
+
+import requests
 
 import utils
 

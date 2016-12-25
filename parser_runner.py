@@ -3,11 +3,10 @@
 """Main runner for parsers"""
 
 from __future__ import division
-
 import logging
 
-from parser_client import get_snippets_info, get_snippets, commit_result
-from utils import import_parser_key
+import parser_client
+import utils
 
 def count_slots(snippets_info):
     """Count slots that have to be used in order to group requests.
@@ -27,18 +26,18 @@ def extract_metadata(parser_config, snippet):
 
 def process_html_bulk(parser_config):
     """Retrieve and process each snippet, committing resulting metadata."""
-    snippets = get_snippets(parser_config) # Max 300 snippets for each iteration
+    snippets = parser_client.get_snippets(parser_config) # Max 300 snippets for each iteration
     for snippet in snippets:
         new_metadata = extract_metadata(parser_config, snippet)
-        commit_result(parser_config, new_metadata, snippet)
+        parser_client.commit_result(parser_config, new_metadata, snippet)
 
 def run(arguments, parser_config):
     """Run parser."""
     parser_config['repeat'] = arguments['repeat']
     # parser_config['snippetConcurrency'] = arguments['snippetConcurrency']
     # parser_config['delay'] = arguments['delay']
-    parser_config = import_parser_key(parser_config)
-    snippets_info = get_snippets_info(parser_config)
+    parser_config = utils.import_parser_key(parser_config)
+    snippets_info = parser_client.get_snippets_info(parser_config)
     parser_config['slots'] = count_slots(snippets_info)
 
     for i in range(parser_config['slots']):
