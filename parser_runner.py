@@ -34,8 +34,6 @@ def process_html_bulk(parser_config):
 def run(arguments, parser_config):
     """Run parser."""
     parser_config['repeat'] = arguments['repeat']
-    # parser_config['snippetConcurrency'] = arguments['snippetConcurrency']
-    # parser_config['delay'] = arguments['delay']
     parser_config = utils.import_parser_key(parser_config)
     snippets_info = parser_client.get_snippets_info(parser_config)
     parser_config['slots'] = count_slots(snippets_info)

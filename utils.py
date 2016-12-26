@@ -89,18 +89,7 @@ def _parse_arguments():
         action="store", dest="url",
         default=None
     )
-    # parser.add_argument(
-    #     '--snippetConcurrency',
-    #     help="Snippet Concurrency",
-    #     action="store_const", dest="snippetConcurrency", const=None,
-    #     default=5
-    # )
-    # parser.add_argument(
-    #     '--delay',
-    #     help="Delay",
-    #     action="store_const", dest="delay", const=None,
-    #     default=200
-    # )
+
     return vars(parser.parse_args())
 
 def _configure_settings():
