@@ -20,7 +20,8 @@ import parser_runner
 import utils
 
 def get_post_language(snippet):
-    """Note: the `new_meta` keys need to be equal to those declared in
+    """
+    Note: the `new_meta` keys need to be equal to those declared in
     `parsers-keys.json`.
 
     """
@@ -40,8 +41,10 @@ POST_LANGUAGE_CONFIG = {
 def start(arguments=None):
     """Start the parser."""
     if arguments is None:
-        arguments = utils.CONSOLE_ARGS
+        # Configure default settings
+        arguments = utils.configure_settings()
     parser_runner.run(arguments, POST_LANGUAGE_CONFIG)
 
 if __name__ == '__main__':
-    start()
+    console_args = utils.configure_settings()
+    start(console_args)

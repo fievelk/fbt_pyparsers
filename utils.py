@@ -10,6 +10,8 @@ import signal
 import sys
 from copy import deepcopy
 
+CONSOLE_ARGS = None
+
 def import_parser_key(parser_config):
     """
     Enrich the parser configuration with its key. This is used by the server to
@@ -92,15 +94,15 @@ def _parse_arguments():
 
     return vars(parser.parse_args())
 
-def _configure_settings():
+def configure_settings():
     """Configure command-line arguments, logging levels and interruption signal.
     Return a dictionary of provided command-line arguments.
 
     """
-    console_args = _parse_arguments()
-    _configure_logger(console_args['loglevel'])
+    global CONSOLE_ARGS
+    CONSOLE_ARGS = _parse_arguments()
+    _configure_logger(CONSOLE_ARGS['loglevel'])
     signal.signal(signal.SIGINT, _signal_handler)
-    return console_args
+    return CONSOLE_ARGS
 
 # Import console arguments and make them available to other modules
-CONSOLE_ARGS = _configure_settings()
