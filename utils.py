@@ -79,13 +79,13 @@ def _parse_arguments():
     )
     parser.add_argument(
         '-r', '--repeat',
-        help="Repeat",
+        help="Repeat flag",
         action="store", dest="repeat",
         default=None
     )
     parser.add_argument(
         '-u', '--url',
-        help="URL",
+        help="Set base URL for API requests",
         action="store", dest="url",
         default=None
     )
