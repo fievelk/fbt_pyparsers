@@ -25,13 +25,12 @@ def get_post_language(snippet):
     `parsers-keys.json`.
 
     """
+    # TODO: Implement parser logic
     result = 'new metadata value'
-    # return {'postLanguage': result}
-    return {'postType': result}
+    return {'postLanguage': result}
 
 POST_LANGUAGE_CONFIG = {
-    'name': 'postType',
-    # 'parserName': 'postType',
+    'name': 'postType', # This is just an example that has to be changed
     'requirements': {},
     'implementation': get_post_language,
     'since': "2016-11-13",

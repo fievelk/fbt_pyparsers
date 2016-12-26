@@ -8,7 +8,7 @@
 ## Run the parser
 
 ```bash
-python parser_runner.py
+python post_language.py
 ```
 
 ## Options
