@@ -11,9 +11,10 @@ import requests
 import utils
 
 def _generate_config_payload(parser_config):
-    """This method maps the parser configuration structure into a correct payload
-    that has to be send to the server. This is done because of some naming mismatches
-    between parser configuration variables and server payload parameters.
+    """
+    Map the parser configuration structure into a correct payload that has to be
+    sent to the server. This is done because of some naming mismatches between
+    parser configuration variables and server payload parameters.
 
     """
     payload = deepcopy(parser_config)
@@ -21,12 +22,17 @@ def _generate_config_payload(parser_config):
     return payload
 
 def _compose_url(method, base_url=None):
-    base_url = utils.CONSOLE_ARGS.get('url', base_url)
+    """
+    Compose the destination URL using `base_url` and `method` strings. If
+    base_url has not been explicitly specified, use the value provided from
+    command-line. If that is not available either, use FTB default value.
+
+    """
     if base_url is None:
-        base_url = 'https://facebook.tracking.exposed/api/v1/snippet/'
-    if not base_url.endswith('/'):
-        base_url += '/'
-    return base_url + str(method)
+        console_url = utils.CONSOLE_ARGS.get('url')
+        base_url = console_url if console_url else 'https://facebook.tracking.exposed'
+    base_url.rstrip('/')
+    return '/'.join([base_url, 'api', 'v1', 'snippet', str(method)])
 
 def get_snippets_info(parser_config):
     """Get information about available snippets."""
@@ -37,6 +43,7 @@ def get_snippets_info(parser_config):
     # Raise an exception if we get a 4XX client error or 5XX server error response
     resp.raise_for_status()
     logging.debug("Response: %s", resp.content)
+
     return json.loads(resp.text)
 
 def get_snippets(parser_config):
