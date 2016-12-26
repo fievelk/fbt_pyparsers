@@ -22,7 +22,7 @@ def count_slots(snippets_info):
 
 def extract_metadata(parser_config, snippet):
     """Apply the parser over the snippet and return new metadata."""
-    return parser_config['implementation'](snippet['html'])
+    return parser_config['implementation'](snippet)
 
 def process_html_bulk(parser_config):
     """Retrieve and process each snippet, committing resulting metadata."""
