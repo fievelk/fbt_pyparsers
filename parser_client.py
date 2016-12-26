@@ -19,6 +19,7 @@ def _generate_config_payload(parser_config):
     """
     payload = deepcopy(parser_config)
     payload['parserName'] = payload.pop('name')
+
     return payload
 
 def _compose_url(method, base_url=None):
@@ -32,6 +33,7 @@ def _compose_url(method, base_url=None):
         console_url = utils.CONSOLE_ARGS.get('url')
         base_url = console_url if console_url else 'https://facebook.tracking.exposed'
     base_url.rstrip('/')
+
     return '/'.join([base_url, 'api', 'v1', 'snippet', str(method)])
 
 def get_snippets_info(parser_config):
@@ -88,6 +90,7 @@ def commit_result(parser_config, new_meta, snippet):
         'fields': new_meta.keys(),
         'parserName': parser_config['name']
     }
+
     return {'this is a result': True}
     # TODO: Uncomment to make it work
     # return requests.post(url, data=payload)

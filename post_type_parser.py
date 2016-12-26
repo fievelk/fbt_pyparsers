@@ -41,10 +41,8 @@ POST_LANGUAGE_CONFIG = {
 def start(arguments=None):
     """Start the parser."""
     if arguments is None:
-        # Configure default settings
         arguments = utils.configure_settings()
     parser_runner.run(arguments, POST_LANGUAGE_CONFIG)
 
 if __name__ == '__main__':
-    console_args = utils.configure_settings()
-    start(console_args)
+    start(utils.configure_settings())

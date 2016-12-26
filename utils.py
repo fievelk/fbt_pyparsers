@@ -10,6 +10,7 @@ import signal
 import sys
 from copy import deepcopy
 
+# Console arguments are made available to the other modules
 CONSOLE_ARGS = None
 
 def import_parser_key(parser_config):
@@ -27,8 +28,7 @@ def import_parser_key(parser_config):
         logging.error('Your parser key was not found in parsers-keys.json')
         raise exception
 
-    extended_config = set_requirements(extended_config)
-    return extended_config
+    return set_requirements(extended_config)
 
 def set_requirements(parser_config):
     """Set `requirements` in parser configuration."""
@@ -41,6 +41,7 @@ def set_requirements(parser_config):
     else:
         raise WrongRequirementsException("parser_config['repeat'] should be a \
               ['true'|'false'] string.")
+
     return parser_config
 
 # ---------------------------------------------------------------------------- #
@@ -103,6 +104,5 @@ def configure_settings():
     CONSOLE_ARGS = _parse_arguments()
     _configure_logger(CONSOLE_ARGS['loglevel'])
     signal.signal(signal.SIGINT, _signal_handler)
-    return CONSOLE_ARGS
 
-# Import console arguments and make them available to other modules
+    return CONSOLE_ARGS
