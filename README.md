@@ -4,6 +4,7 @@
 - python `2.7`, `3.4` or `3.5`
 - python packages:
   - `requests`
+  - `pyquery`
 
 ## Run the parser
 
