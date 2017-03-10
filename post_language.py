@@ -15,11 +15,9 @@ Console usage example for debugging:
 """
 
 from datetime import datetime
-import json
 
 from pyquery import PyQuery as pq
 
-from cavnar_trenkle_min import CavnarTrenkleImpl
 import parser_runner
 import utils
 
@@ -53,12 +51,7 @@ def get_post_language(snippet):
     if not content_text:
         return fail_result
 
-    # NOTE: This should be ideally done only once, not in each iteration
-    model_file = 'model_cavnar_trenkle.json'
-    model = _load_json_file(model_file)
-    implementation = CavnarTrenkleImpl()
-
-    language_scores = implementation.predict_language_scores(content_text, model, error_value=8000)
+    # language_scores = implementation.predict_language_scores(content_text, model, error_value=8000)
 
     return {
         'postLanguage': True,
@@ -91,12 +84,6 @@ def _get_user_content(snippet):
 
     snippet['postText'] = content_text
     return snippet
-
-# TODO: move in utils
-def _load_json_file(input_file):
-    with open(input_file) as in_file:
-        result = json.load(in_file)
-    return result
 
 def start(arguments=None):
     """Start the parser."""
