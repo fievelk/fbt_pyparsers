@@ -5,6 +5,7 @@
 - python packages:
   - `requests`
   - `pyquery`
+  - `nltk`
 
 ## Run the parser
 
