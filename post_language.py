@@ -17,6 +17,7 @@ Console usage example for debugging:
 from datetime import datetime
 
 from pyquery import PyQuery as pq
+from langdetect import detect_langs
 
 import parser_runner
 import utils
@@ -51,7 +52,10 @@ def get_post_language(snippet):
     if not content_text:
         return fail_result
 
-    # language_scores = implementation.predict_language_scores(content_text, model, error_value=8000)
+    try:
+        language_scores = detect_langs(content_text)
+    except Exception as e:
+        return { 'postLanguage': False }
 
     return {
         'postLanguage': True,
