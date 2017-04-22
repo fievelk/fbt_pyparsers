@@ -77,7 +77,11 @@ def get_snippets(parser_config):
     payload = _generate_config_payload(parser_config)
     resp = requests.post(url, data=payload)
 
-    return json.loads(resp.text)
+    try:
+        return json.loads(resp.text)
+    except ValueError:
+        logging.info("No snippets available!")
+        return []
 
 def commit_result(parser_config, new_meta, snippet):
     """Commit new metadata obtained by executing a parser over the snippet."""
