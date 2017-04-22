@@ -36,22 +36,10 @@ def _compose_url(method, base_url=None):
 
     return '/'.join([base_url, 'api', 'v1', 'snippet', str(method)])
 
-def get_snippets_info(parser_config):
-    """Get information about available snippets."""
-    url = _compose_url('status')
-    payload = _generate_config_payload(parser_config)
-    logging.info("Requesting info about available snippets...")
-    resp = requests.post(url, data=payload)
-    # Raise an exception if we get a 4XX client error or 5XX server error response
-    resp.raise_for_status()
-    logging.debug("Response: %s", resp.content)
-
-    return json.loads(resp.text)
-
 def get_snippets(parser_config):
     """
-    Fetch snippets. Note: we can only fetch a limited amount of snippets, which
-    is defined by the 'limit' value retrieved from `get_snippets_info`.
+    Fetch snippets. Note: we can only fetch a limited amount of snippets
+    depending on `since` and `until` fields defined in `parser_config`.
 
     Parameters
     ----------
@@ -78,7 +66,10 @@ def get_snippets(parser_config):
     resp = requests.post(url, data=payload)
 
     try:
-        return json.loads(resp.text)
+        snippets = json.loads(resp.text)
+        if not snippets:
+            logging.info("No snippets available!")
+        return snippets
     except ValueError:
         logging.info("No snippets available!")
         return []
