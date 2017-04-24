@@ -63,7 +63,7 @@ def _signal_handler(signum, frame):
 
 def _configure_logger(loglevel):
     """Configure logging levels."""
-    logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
+    logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
     logging.basicConfig(level=loglevel)
 
 def _parse_arguments():
