@@ -15,10 +15,13 @@ def _generate_config_payload(parser_config):
     Map the parser configuration structure into a correct payload that has to be
     sent to the server. This is done because of some naming mismatches between
     parser configuration variables and server payload parameters.
+    The implementation reference is also removed from the payload in order to
+    avoid issues when serializing to json.
 
     """
     payload = deepcopy(parser_config)
     payload['parserName'] = payload.pop('name')
+    del payload['implementation']
 
     return payload
 
@@ -61,14 +64,17 @@ def get_snippets(parser_config):
 
     """
     logging.info("Fetching snippets...")
-    url = _compose_url('content')
+
+    url     = _compose_url('content')
     payload = _generate_config_payload(parser_config)
-    resp = requests.post(url, data=payload)
+    payload = json.dumps(payload)
+    headers = {'content-type': 'application/json'}
+
+    resp = requests.post(url, data=payload, headers=headers)
 
     try:
         snippets = json.loads(resp.text)
-        if not snippets:
-            logging.info("No snippets available!")
+        logging.info("%s snippets available!", len(snippets))
         return snippets
     except ValueError:
         logging.info("No snippets available!")
