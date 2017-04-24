@@ -17,8 +17,11 @@ def run(arguments, parser_config):
     parser_config['repeat'] = arguments['repeat']
     parser_config = utils.import_parser_key(parser_config)
     snippets = parser_client.get_snippets(parser_config)
+    logging.info("Running parser over all snippets...")
 
     for i, snippet in enumerate(snippets):
         logging.debug("Processing snippet #%d", i+1)
         new_metadata = extract_metadata(parser_config, snippet)
         parser_client.commit_result(parser_config, new_metadata, snippet)
+
+    logging.info("Done!")
