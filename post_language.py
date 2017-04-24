@@ -45,17 +45,14 @@ def get_post_language(snippet):
     """
     fail_result = {'postLanguage': False}
 
-    # Check if the other parser correctly parsed text
-    # TODO: remove this part (this is already implicit thanks to requirements)
-    snippet = _get_user_content(snippet) # Remove
-    content_text = snippet.get('postText')
+    content_text = snippet.get('text')
     if not content_text:
         return fail_result
 
     try:
         language_scores = detect_langs(content_text)
     except Exception as e:
-        return { 'postLanguage': False }
+        return fail_result
 
     return {
         'postLanguage': True,
@@ -66,28 +63,11 @@ def get_post_language(snippet):
 POST_LANGUAGE_CONFIG = {
     # 'name': 'postLanguage',
     'name': 'postType', # This is just an example that has to be changed
-    'requirements': {},
-    # 'requirements': {postText: true}, # Only use snippets for which text has been extracted
+    'requirements': {"feedText": True}, # Only use snippets for which text has been extracted
     'implementation': get_post_language,
-    'since': "2016-11-13",
+    'since': "2017-04-24T12:00",
     'until': datetime.now().isoformat()
 }
-
-# TODO: delete!
-def _get_user_content(snippet):
-    d = pq(snippet['html'])
-    if not d:
-        # We failed processing the html content
-        return snippet
-    content = d('.userContent[id]')
-    if not content:
-        content = d('.userContent')
-    content_text = content.text()
-    if not content_text:
-        return snippet
-
-    snippet['postText'] = content_text
-    return snippet
 
 def start(arguments=None):
     """Start the parser."""
