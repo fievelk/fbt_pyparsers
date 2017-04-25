@@ -23,24 +23,20 @@ import parser_runner
 import utils
 
 def get_post_language(snippet):
-    """
-    Note: the `new_meta` keys need to be equal to those declared in
-    `parsers-keys.json`.
+    """Detect possible language of the given snippet `text` field.
 
-    Parameters
-    ----------
-    snippet : str
-        A snippet.
+    Args:
+        snippet (str): A snippet retrieved from the server.
 
-    Returns
-    -------
-    dict
+    Returns:
         A dictionary object containing the parser results:
        {
-         'postLanguage': true | false, (depending on success)
-         'titleLanguage': '<value>',
-         'contentLanguage': '<value>',
+         'postLanguage': True | False, # (depending on success)
+         'language_scores': "{'<lang>': <probability>}"
        }
+
+    Note:
+        `language_scores` is a dictionary-like string.
 
     """
     fail_result = {'postLanguage': False}
