@@ -17,7 +17,6 @@ Console usage example for debugging:
 
 from datetime import datetime
 
-from pyquery import PyQuery as pq
 from langdetect import detect_langs
 
 import parser_runner
