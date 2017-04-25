@@ -5,10 +5,11 @@
 Parser implementation using Python.
 The following fields are required for the configuration constant:
     `name`: name of the parser,
-    `requirements`: {},
+    `requirements`: a dictionary of other fields required to successfully
+                    execute the parser,
     `implementation`: the parsing function,
-    `since`: the date from which snippets to be parsed should be retrieved (ISO8601)
-    `until`: the date until which snippets to be parsed should be retrieved (ISO8601)
+    `since`: the date from which snippets should be retrieved (ISO8601)
+    `until`: the date until which snippets should be retrieved (ISO8601)
 
 Console usage example for debugging:
     python my_parser.py -d
